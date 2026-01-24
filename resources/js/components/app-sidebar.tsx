@@ -11,6 +11,9 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
+import { index as students } from '@/routes/students';
+import { index as laptops } from '@/routes/laptops';
+import { index as gateentries } from '@/routes/gateentries';
 import type { NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import { BookOpen, Folder, LayoutGrid, GraduationCap, Laptop, School } from 'lucide-react';
@@ -35,7 +38,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Gate Entries',
-        href: dashboard(),
+        href: gateentries(),
         icon: School,
     },
 ];
