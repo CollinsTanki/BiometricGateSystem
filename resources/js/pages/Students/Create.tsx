@@ -6,6 +6,12 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
+import {
+  Alert,  
+  AlertDescription,
+  AlertTitle,
+} from "@/components/ui/alert";
+import { CircleAlert } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -33,23 +39,6 @@ export default function Create() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-
-        // Basic client-side validation
-        const errors: Record<string, string> = {};
-        if (!form.data.full_name) errors.full_name = 'Full name is required.';
-        if (!form.data.student_id) errors.student_id = 'Student ID is required.';
-        if (!form.data.email) errors.email = 'Email is required.';
-        if (!form.data.phone) errors.phone = 'Phone number is required.';
-        if (!form.data.department) errors.department = 'Department is required.';
-        if (!form.data.major) errors.major = 'Major is required.';
-        if (!form.data.year_of_study) errors.year_of_study = 'Year of study is required.';
-        if (!form.data.gender) errors.gender = 'Gender is required.';
-
-        if (Object.keys(errors).length > 0) {
-            Object.entries(errors).forEach(([key, value]) => form.setError(key as keyof typeof form.data, value));
-            return;
-        }
-
         form.post('/students', {
             forceFormData: true,
         });
@@ -74,12 +63,27 @@ export default function Create() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create New Student - Biometric Gate System" />
-            <div className="max-w-4xl mx-auto p-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-                <div className="mb-8 text-center">
-                    <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">Create New Student</h1>
-                    <p className="text-gray-600 dark:text-gray-300">Fill in the details below to register a new student in the biometric system.</p>
-                </div>
-                <form onSubmit={handleSubmit} encType="multipart/form-data">
+            <div className="px-4 py-6">
+                <div className="space-y-6">
+                    <div className="mb-8 text-center">
+                        <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">Create New Student</h1>
+                        <p className="text-gray-600 dark:text-gray-300">Fill in the details below to register a new student in the biometric system.</p>
+                    </div>
+                    <div className="max-w-4xl mx-auto">
+                        <form onSubmit={handleSubmit} encType="multipart/form-data">
+                        {/* Display errrors */}
+                        {Object.keys(form.errors).length > 0 &&(
+                          <Alert>
+                           <CircleAlert />  
+                           <AlertTitle>Errors!</AlertTitle>
+                           <AlertDescription>
+                           Make sure all fields are filled correctly.
+                           </AlertDescription>
+                          {/*<AlertAction>
+                          <Button variant="outline">Enable</Button>
+                          </AlertAction> */}
+                          </Alert>
+                        )}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <div>
                             <Label htmlFor="full_name">Full Name</Label>
@@ -164,7 +168,7 @@ export default function Create() {
                         <div>
                             <Label htmlFor="department">Department</Label>
                             <Select value={form.data.department} onValueChange={(value) => form.setData('department', value)}>
-                                <SelectTrigger className={`mt-1 ${form.errors.department ? 'border-red-500' : ''}`}>
+                                <SelectTrigger className="mt-1">
                                     <SelectValue placeholder="Select department" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -173,12 +177,11 @@ export default function Create() {
                                     ))}
                                 </SelectContent>
                             </Select>
-                            {form.errors.department && <p className="text-red-500 text-sm mt-1">{form.errors.department}</p>}
                         </div>
                         <div>
                             <Label htmlFor="major">Major</Label>
                             <Select value={form.data.major} onValueChange={(value) => form.setData('major', value)} disabled={!form.data.department}>
-                                <SelectTrigger className={`mt-1 ${form.errors.major ? 'border-red-500' : ''}`}>
+                                <SelectTrigger className="mt-1">
                                     <SelectValue placeholder="Select major" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -187,13 +190,12 @@ export default function Create() {
                                     ))}
                                 </SelectContent>
                             </Select>
-                            {form.errors.major && <p className="text-red-500 text-sm mt-1">{form.errors.major}</p>}
                         </div>
                     </div>
                     <div className="mb-4">
                         <Label htmlFor="year_of_study">Year of Study</Label>
                         <Select value={form.data.year_of_study} onValueChange={(value) => form.setData('year_of_study', value)}>
-                            <SelectTrigger className={`mt-1 ${form.errors.year_of_study ? 'border-red-500' : ''}`}>
+                            <SelectTrigger className="mt-1">
                                 <SelectValue placeholder="Select year" />
                             </SelectTrigger>
                             <SelectContent>
@@ -203,7 +205,6 @@ export default function Create() {
                                 <SelectItem value="4">4th Year</SelectItem>
                             </SelectContent>
                         </Select>
-                        {form.errors.year_of_study && <p className="text-red-500 text-sm mt-1">{form.errors.year_of_study}</p>}
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div>
@@ -212,10 +213,9 @@ export default function Create() {
                                 id="photo"
                                 type="file"
                                 accept="image/*"
-                                onChange={(e) => form.setData('photo', e.target.files ? e.target.files[0] : null)}
-                                className={`mt-1 ${form.errors.photo ? 'border-red-500' : ''}`}
+                                onChange={(e) => form.setData('photo', e.target.files?.[0] || null)}
+                                className="mt-1"
                             />
-                            {form.errors.photo && <p className="text-red-500 text-sm mt-1">{form.errors.photo}</p>}
                         </div>
                         <div>
                             <Label htmlFor="fingerprints">Fingerprints</Label>
@@ -225,9 +225,8 @@ export default function Create() {
                                 accept="image/*"
                                 multiple
                                 onChange={(e) => form.setData('fingerprints', e.target.files ? Array.from(e.target.files) : [])}
-                                className={`mt-1 ${form.errors.fingerprints ? 'border-red-500' : ''}`}
+                                className="mt-1"
                             />
-                            {form.errors.fingerprints && <p className="text-red-500 text-sm mt-1">{form.errors.fingerprints}</p>}
                         </div>
                     </div>
                     <div className="text-center">
@@ -236,6 +235,8 @@ export default function Create() {
                         </Button>
                     </div>
                 </form>
+                    </div>
+                </div>
             </div>
         </AppLayout>
     );
