@@ -7,7 +7,8 @@ use App\Models\Student;
 class StudentController extends Controller
 {
     public function index(){
-        return Inertia::render('Students/Index', []);
+        $students = Student::all();
+        return Inertia::render('Students/Index', compact('students'));
     }
 
     public function create(){

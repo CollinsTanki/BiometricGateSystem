@@ -16,7 +16,7 @@ import { index as laptops } from '@/routes/laptops';
 import { index as gateentries } from '@/routes/gateentries';
 import type { NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, GraduationCap, Laptop, School } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, GraduationCap, Laptop, School, Fingerprint,  QrCode } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -25,12 +25,23 @@ const mainNavItems: NavItem[] = [
         href: dashboard(),
         icon: LayoutGrid,
     },
+    {
+        title: 'Biometric Registration',
+        href: dashboard(),
+        icon: Fingerprint,
+    },
     
     {
         title: 'Students',
         href: students(),
         icon: GraduationCap,
     },
+    {
+        title: 'Scan Registration',
+        href: laptops(),
+        icon:  QrCode,
+    },
+
     {
         title: 'Laptops',
         href: laptops(),
