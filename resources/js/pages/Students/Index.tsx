@@ -2,8 +2,9 @@ import AppLayout from '@/layouts/app-layout';
 import { index as studentsRoute } from '@/routes/students';
 import { Button } from '@/components/ui/button';
 import type { BreadcrumbItem } from '@/types';
-import { Head, Link, usePage, useForm } from '@inertiajs/react';
+import { Head, Link, usePage, useForm, router } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
+import { route } from 'ziggy-js';
 import {
   Table,
   TableBody,
@@ -40,7 +41,7 @@ export default function Index() {
     const {processing, delete: destroy} = useForm();
     const handleDelete = (id: number, full_name: string) => {
         if(confirm(`Do you want to delete a student ${id}.${full_name}?`))
-            destroy(`/students/${id}`)
+            destroy(route("students.destroy", id));
     }
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -70,6 +71,7 @@ export default function Index() {
                         <TableHead className="text-right font-semibold text-slate-100 dark:text-slate-200">Department</TableHead>
                         <TableHead className="text-right font-semibold text-slate-100 dark:text-slate-200">Major</TableHead>
                         <TableHead className="text-right font-semibold text-slate-100 dark:text-slate-200">Year of Study</TableHead>
+                        <TableHead className="text-right font-semibold text-slate-100 dark:text-slate-200">Actions</TableHead>
                     </TableRow>
                     </TableHeader>
   <TableBody>
@@ -83,7 +85,10 @@ export default function Index() {
       <TableCell className="text-right">{student.department}</TableCell>
       <TableCell className="text-right">{student.major}</TableCell>
       <TableCell className="text-right">{student.year_of_study}</TableCell>
-      <TableCell><Button onClick={() => handleDelete(student.id, student.full_name)} className="bg-red-500 hover:bg-red-700">Delete</Button></TableCell>
+      <TableCell className="text-center">
+        <Button className="bg-slate-600 hover:bg-slate-700">Edit</Button>
+        <Button disabled={processing} onClick={() => handleDelete(student.id, student.full_name)} className="bg-red-500 hover:bg-red-700">Delete</Button>
+    </TableCell>
     </TableRow>
   ))}
 </TableBody>
@@ -101,3 +106,4 @@ export default function Index() {
         </AppLayout>
     );
 }
+
