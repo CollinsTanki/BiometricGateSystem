@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import type { BreadcrumbItem } from '@/types';
 import { Head, Link, usePage, useForm, router } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
-import { route } from 'ziggy-js';
 import {
   Table,
   TableBody,
@@ -32,24 +31,24 @@ interface Student {
     year_of_study : string,
     gender : string,
 }
-interface StudentsPageProps {
-    students : Student[],
-}
 
 export default function Index() {
-    const {students, flash } = usePage<{ students: Student[]; flash: { success?: string; error?: string } }>().props;
+    const {students = [], flash = {} } = usePage<{ students: Student[]; flash: { success?: string; error?: string } }>().props;
     const {processing, delete: destroy} = useForm();
+    
     const handleDelete = (id: number, full_name: string) => {
         if(confirm(`Do you want to delete a student ${id}.${full_name}?`))
-            destroy(route("students.destroy", id));
+            destroy(`/students/${id}`);
     }
+    
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Students" />
             
-            {flash.success && <div>{flash.success}</div>}
-            {flash.error && <div>{flash.error}</div>}
-            <div>
+            {flash.success && <div className="p-4 mb-4 bg-green-100 text-green-700 rounded">{flash.success}</div>}
+            {flash.error && <div className="p-4 mb-4 bg-red-100 text-red-700 rounded">{flash.error}</div>}
+            
+            <div className="mb-4">
                 <Link href="/students/create">
                     <Button className="bg-sky-500 text-white hover:bg-sky-600">
                         <Plus className="mr-2 h-4 w-4" />
@@ -57,51 +56,48 @@ export default function Index() {
                     </Button>
                 </Link>
             </div>
-            {students.length > 0 && (
+            
+            {students && students.length > 0 ? (
                 <div className='m-4'>
                     <Table>
-                    <TableCaption>A list of your recent students.</TableCaption>
-                   <TableHeader className="bg-slate-800 dark:bg-slate-900">
-                    <TableRow>
-                        <TableHead className="w-[100px] font-semibold text-slate-100 dark:text-slate-200">ID</TableHead>
-                        <TableHead className="font-semibold text-slate-100 dark:text-slate-200">Full Name</TableHead>
-                        <TableHead className="font-semibold text-slate-100 dark:text-slate-200">Student ID</TableHead>
-                        <TableHead className="text-right font-semibold text-slate-100 dark:text-slate-200">Gender</TableHead>
-                        <TableHead className="text-right font-semibold text-slate-100 dark:text-slate-200">Email</TableHead>
-                        <TableHead className="text-right font-semibold text-slate-100 dark:text-slate-200">Department</TableHead>
-                        <TableHead className="text-right font-semibold text-slate-100 dark:text-slate-200">Major</TableHead>
-                        <TableHead className="text-right font-semibold text-slate-100 dark:text-slate-200">Year of Study</TableHead>
-                        <TableHead className="text-right font-semibold text-slate-100 dark:text-slate-200">Actions</TableHead>
-                    </TableRow>
-                    </TableHeader>
-  <TableBody>
-  {students.map((student) => (
-    <TableRow key={student.id}>
-      <TableCell className="font-medium">{student.id}</TableCell>
-      <TableCell>{student.full_name}</TableCell>
-      <TableCell>{student.student_id}</TableCell>
-      <TableCell className="text-right">{student.gender}</TableCell>
-      <TableCell className="text-right">{student.email}</TableCell>
-      <TableCell className="text-right">{student.department}</TableCell>
-      <TableCell className="text-right">{student.major}</TableCell>
-      <TableCell className="text-right">{student.year_of_study}</TableCell>
-      <TableCell className="text-center">
-        <Button className="bg-slate-600 hover:bg-slate-700">Edit</Button>
-        <Button disabled={processing} onClick={() => handleDelete(student.id, student.full_name)} className="bg-red-500 hover:bg-red-700">Delete</Button>
-    </TableCell>
-    </TableRow>
-  ))}
-</TableBody>
-</Table>
-
-    
-
-                
-        
-
+                        <TableCaption>A list of your recent students.</TableCaption>
+                        <TableHeader className="bg-slate-800 dark:bg-slate-900">
+                            <TableRow>
+                                <TableHead className="w-[100px] font-semibold text-slate-100 dark:text-slate-200">ID</TableHead>
+                                <TableHead className="font-semibold text-slate-100 dark:text-slate-200">Full Name</TableHead>
+                                <TableHead className="font-semibold text-slate-100 dark:text-slate-200">Student ID</TableHead>
+                                <TableHead className="text-right font-semibold text-slate-100 dark:text-slate-200">Gender</TableHead>
+                                <TableHead className="text-right font-semibold text-slate-100 dark:text-slate-200">Email</TableHead>
+                                <TableHead className="text-right font-semibold text-slate-100 dark:text-slate-200">Department</TableHead>
+                                <TableHead className="text-right font-semibold text-slate-100 dark:text-slate-200">Major</TableHead>
+                                <TableHead className="text-right font-semibold text-slate-100 dark:text-slate-200">Year of Study</TableHead>
+                                <TableHead className="text-right font-semibold text-slate-100 dark:text-slate-200">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {students.map((student) => (
+                                <TableRow key={student.id}>
+                                    <TableCell className="font-medium">{student.id}</TableCell>
+                                    <TableCell>{student.full_name}</TableCell>
+                                    <TableCell>{student.student_id}</TableCell>
+                                    <TableCell className="text-right">{student.gender}</TableCell>
+                                    <TableCell className="text-right">{student.email}</TableCell>
+                                    <TableCell className="text-right">{student.department}</TableCell>
+                                    <TableCell className="text-right">{student.major}</TableCell>
+                                    <TableCell className="text-right">{student.year_of_study}</TableCell>
+                                    <TableCell className="text-center space-x-2">
+                                        <Link href={`/students/${student.id}/edit`}><Button className="bg-slate-600 hover:bg-slate-700">Edit</Button></Link>
+                                        <Button disabled={processing} onClick={() => handleDelete(student.id, student.full_name)} className="bg-red-500 hover:bg-red-700">Delete</Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
                 </div>
-                
-
+            ) : (
+                <div className="p-8 text-center text-gray-500">
+                    <p className="text-lg">No students found. Click the button above to add a new student.</p>
+                </div>
             )}
         </AppLayout>
     );
