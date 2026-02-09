@@ -18,4 +18,9 @@ class Student extends Model
         'photo',
         'fingerprints',
     ];
+public function laptop()
+{
+    return $this->hasOne(Laptop::class);
+}
+
 }

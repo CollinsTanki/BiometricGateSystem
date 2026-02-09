@@ -25,6 +25,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/students/{student}', [StudentController::class, 'destroy'])->name('students.destroy');
 
     Route::get('/laptops', [LaptopController::class, 'index'])->name('laptops.index');
+    Route::get('/laptops/create', [LaptopController::class, 'create'])->name('laptops.create');
+     Route::post('/laptops', [LaptopController::class, 'store'])->name('laptops.store');
+
+
+
+
+
 
     Route::get('/gateentries', [GateController::class, 'index'])->name('gateentries.index');
 });
