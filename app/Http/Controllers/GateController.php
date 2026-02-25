@@ -11,4 +11,8 @@ class GateController extends Controller
     public function index(){
         return inertia::render('GateEntries/Index', []);
     }
+
+    public function create(){
+        return Inertia::render('GateEntries/Create');
+    }
 }

@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\StudentController;
-use App\Http\Controllers\LaptopController;
 use App\Http\Controllers\GateController;
+use App\Http\Controllers\LaptopController;
+use App\Http\Controllers\StudentController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -29,11 +29,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
      Route::post('/laptops', [LaptopController::class, 'store'])->name('laptops.store');
 
 
-
-
-
-
+            /*Gate Entries*/
     Route::get('/gateentries', [GateController::class, 'index'])->name('gateentries.index');
+    Route::get('/gateentries/create', [LaptopController::class, 'create'])->name('gateentries.create');
+
 });
 
 require __DIR__.'/settings.php';

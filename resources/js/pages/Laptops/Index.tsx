@@ -1,8 +1,7 @@
 import AppLayout from '@/layouts/app-layout'
 import { Button } from '@/components/ui/button'
 import type { BreadcrumbItem } from '@/types'
-import { Head, Link, usePage, useForm } from '@inertiajs/react'
-import { Plus } from 'lucide-react'
+import { Head, Link, usePage } from '@inertiajs/react'
 import {
   Table,
   TableBody,
@@ -16,45 +15,36 @@ import {
 /* ---------------- Breadcrumbs ---------------- */
 const breadcrumbs: BreadcrumbItem[] = [
   {
-    title: 'Laptops',
+    title: 'Laptop Management',
     href: '/laptops',
   },
 ]
 
 /* ---------------- Types ---------------- */
-interface Laptop {
+interface Student {
   id: number
-  laptop_brand: string
-  model_number: string
-  serial_number: string
-  mac_address: string
-  student: {
+  full_name: string
+  student_id: string
+  department: string
+  year_of_study: string
+  laptop?: {
     id: number
-    full_name: string
-    student_id: string
-    department: string
-    year_of_study: string
-  }
+    laptop_brand: string
+    model_number: string
+  } | null
 }
 
 /* ---------------- Page ---------------- */
 export default function Index() {
-  const { laptops = [], flash = {} } = usePage<{
-    laptops: Laptop[]
+
+  const { students = [], flash = {} } = usePage<{
+    students: Student[]
     flash: { success?: string; error?: string }
   }>().props
 
-  const { processing, delete: destroy } = useForm()
-
-  const handleDelete = (id: number, studentName: string) => {
-    if (confirm(`Remove laptop assigned to ${studentName}?`)) {
-      destroy(`/laptops/${id}`)
-    }
-  }
-
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title="Laptops" />
+      <Head title="Laptop Management" />
 
       {/* Flash messages */}
       {flash.success && (
@@ -68,63 +58,58 @@ export default function Index() {
         </div>
       )}
 
-      {/* Action button */}
-      <div className="mb-4">
-        <Link href="/laptops/create">
-          <Button className="bg-sky-500 text-white hover:bg-sky-600">
-            <Plus className="mr-2 h-4 w-4" />
-            Assign Laptop
-          </Button>
-        </Link>
-      </div>
-
-      {/* Table */}
-      {laptops.length > 0 ? (
+      {students.length > 0 ? (
         <div className="m-4">
           <Table>
-            <TableCaption>A list of assigned laptops.</TableCaption>
+            <TableCaption>Students and Laptop Assignment Status</TableCaption>
+
             <TableHeader className="bg-slate-800 dark:bg-slate-900">
               <TableRow>
-                <TableHead className="w-[60px] text-slate-100">ID</TableHead>
-                <TableHead className="text-slate-100">Student</TableHead>
+                <TableHead className="text-slate-100">ID</TableHead>
+                <TableHead className="text-slate-100">Full Name</TableHead>
                 <TableHead className="text-slate-100">Student ID</TableHead>
                 <TableHead className="text-slate-100">Department</TableHead>
                 <TableHead className="text-slate-100">Year</TableHead>
-                <TableHead className="text-slate-100">Brand</TableHead>
-                <TableHead className="text-slate-100">Model</TableHead>
-                <TableHead className="text-slate-100">Serial</TableHead>
-                <TableHead className="text-slate-100">MAC</TableHead>
-                <TableHead className="text-center text-slate-100">Actions</TableHead>
+                <TableHead className="text-slate-100">Laptop Status</TableHead>
+                <TableHead className="text-center text-slate-100">Action</TableHead>
               </TableRow>
             </TableHeader>
 
             <TableBody>
-              {laptops.map((laptop) => (
-                <TableRow key={laptop.id}>
-                  <TableCell>{laptop.id}</TableCell>
-                  <TableCell>{laptop.student.full_name}</TableCell>
-                  <TableCell>{laptop.student.student_id}</TableCell>
-                  <TableCell>{laptop.student.department}</TableCell>
-                  <TableCell>{laptop.student.year_of_study}</TableCell>
-                  <TableCell>{laptop.laptop_brand}</TableCell>
-                  <TableCell>{laptop.model_number}</TableCell>
-                  <TableCell>{laptop.serial_number}</TableCell>
-                  <TableCell>{laptop.mac_address}</TableCell>
-                  <TableCell className="text-center space-x-2">
-                    <Link href={`/laptops/${laptop.id}/edit`}>
-                      <Button className="bg-slate-600 hover:bg-slate-700">
-                        Edit
+              {students.map((student) => (
+                <TableRow key={student.id}>
+                  <TableCell>{student.id}</TableCell>
+                  <TableCell>{student.full_name}</TableCell>
+                  <TableCell>{student.student_id}</TableCell>
+                  <TableCell>{student.department}</TableCell>
+                  <TableCell>{student.year_of_study}</TableCell>
+
+                  {/* Laptop Status */}
+                  <TableCell>
+                    {student.laptop ? (
+                      <span className="px-3 py-1 text-sm font-semibold rounded bg-green-100 text-green-700">
+                        {student.laptop.laptop_brand} {student.laptop.model_number}
+                      </span>
+                    ) : (
+                      <span className="px-3 py-1 text-sm font-semibold rounded bg-gray-200 text-gray-600">
+                        Not Assigned
+                      </span>
+                    )}
+                  </TableCell>
+
+                  {/* Action */}
+                  <TableCell className="text-center">
+                    {student.laptop ? (
+                      <Button disabled className="bg-gray-400 cursor-not-allowed">
+                        Assigned
                       </Button>
-                    </Link>
-                    <Button
-                      disabled={processing}
-                      onClick={() =>
-                        handleDelete(laptop.id, laptop.student.full_name)
-                      }
-                      className="bg-red-500 hover:bg-red-700"
-                    >
-                      Delete
-                    </Button>
+                    ) : (
+                      <Link href={`/laptops/create?student_id=${student.id}`}>
+                        <Button className="bg-sky-500 hover:bg-sky-600 text-white">
+                          Assign Laptop
+                        </Button>
+                      </Link>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
@@ -134,7 +119,7 @@ export default function Index() {
       ) : (
         <div className="p-8 text-center text-gray-500">
           <p className="text-lg">
-            No laptops assigned yet. Assign a laptop to a student.
+            No students found.
           </p>
         </div>
       )}

@@ -9,10 +9,12 @@ use Inertia\Inertia;
 
 class LaptopController extends Controller
 {
-    public function index()
-    {
-        return Inertia::render('Laptops/Index', []);
-    }
+public function index()
+{
+    return inertia('Laptops/Index', [
+        'students' => Student::with('laptop')->get()
+    ]);
+}
 
     public function create(Request $request)
     {
@@ -44,7 +46,7 @@ class LaptopController extends Controller
         Laptop::create($validated);
 
         return redirect()
-            ->route('students.index')
+            ->route('laptops.index')
             ->with('success', 'Laptop assigned to student successfully.');
     }
 }
