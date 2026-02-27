@@ -31,7 +31,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             /*Gate Entries*/
     Route::get('/gateentries', [GateController::class, 'index'])->name('gateentries.index');
-    Route::get('/gateentries/create', [LaptopController::class, 'create'])->name('gateentries.create');
+    Route::get('/gateentries/create', [GateController::class, 'create'])->name('gateentries.create');
+    Route::post('/gateentries', [GateController::class, 'store'])->name('gateentries.store');
+
+
 
 });
 
